@@ -9863,7 +9863,7 @@ void fuchsia::Linker::ConstructJob(Compilation &C, const JobAction &JA,
   if (!D.SysRoot.empty())
     CmdArgs.push_back(Args.MakeArgString("--sysroot=" + D.SysRoot));
 
-  if (Args.hasArg(options::OPT_pie))
+  if (!Args.hasArg(options::OPT_shared))
     CmdArgs.push_back("-pie");
 
   if (Args.hasArg(options::OPT_rdynamic))
@@ -9876,7 +9876,10 @@ void fuchsia::Linker::ConstructJob(Compilation &C, const JobAction &JA,
     CmdArgs.push_back("--eh-frame-hdr");
 
   if (Args.hasArg(options::OPT_static)) {
-    CmdArgs.push_back("-static");
+    // Fuchsia does not support statically linked executables, so passing
+    // static option means statically linking all user libraries, except
+    // for standard C library.
+    CmdArgs.push_back("-Bstatic");
   } else if (Args.hasArg(options::OPT_shared)) {
     CmdArgs.push_back("-shared");
   }
@@ -9891,23 +9894,12 @@ void fuchsia::Linker::ConstructJob(Compilation &C, const JobAction &JA,
     }
   }
 
-  // This is a temporary solution, we'll only support PIE in the long run.
-  if (!Args.hasArg(options::OPT_pie))
-    CmdArgs.push_back("-image-base=0x1000000");
-
   CmdArgs.push_back("-o");
   CmdArgs.push_back(Output.getFilename());
 
   if (!Args.hasArg(options::OPT_nostdlib, options::OPT_nostartfiles)) {
     if (!Args.hasArg(options::OPT_shared)) {
-      if (Args.hasArg(options::OPT_pie)) {
-        if (Args.hasArg(options::OPT_static))
-          CmdArgs.push_back(Args.MakeArgString(ToolChain.GetFilePath("rcrt1.o")));
-        else
-          CmdArgs.push_back(Args.MakeArgString(ToolChain.GetFilePath("Scrt1.o")));
-      } else {
-        CmdArgs.push_back(Args.MakeArgString(ToolChain.GetFilePath("crt1.o")));
-      }
+      CmdArgs.push_back(Args.MakeArgString(ToolChain.GetFilePath("Scrt1.o")));
     }
   }
 
@@ -9944,10 +9936,12 @@ void fuchsia::Linker::ConstructJob(Compilation &C, const JobAction &JA,
       if (Args.hasArg(options::OPT_fsplit_stack))
         CmdArgs.push_back("--wrap=pthread_create");
 
-      CmdArgs.push_back("-lc");
-
       if (Args.hasArg(options::OPT_static))
         CmdArgs.push_back("--end-group");
+
+      // Fuchsia does not provide static version of the standard C library.
+      CmdArgs.push_back("-Bdynamic");
+      CmdArgs.push_back("-lc");
     }
   }
 

@@ -1013,6 +1013,7 @@ public:
   Fuchsia(const Driver &D, const llvm::Triple &Triple,
           const llvm::opt::ArgList &Args);
 
+  bool isPIEDefault() const override { return true; }
   bool HasNativeLLVMSupport() const override { return true; }
   bool IsIntegratedAssemblerDefault() const override { return true; }
   llvm::DebuggerKind getDefaultDebuggerTuning() const override {
