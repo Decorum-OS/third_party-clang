@@ -8,6 +8,7 @@
 // CHECK: {{.*}}lld{{.*}}" "-flavor" "gnu"
 // CHECK: "--sysroot=[[SYSROOT]]"
 // CHECK: "-pie"
+// CHECK: "--build-id"
 // CHECK: "-dynamic-linker" "ld.so.1"
 // CHECK: Scrt1.o
 // CHECK-NOT: crti.o

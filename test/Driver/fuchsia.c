@@ -7,6 +7,7 @@
 // CHECK: {{.*}}lld{{.*}}" "-flavor" "gnu"
 // CHECK: "--sysroot=[[SYSROOT]]"
 // CHECK: "-pie"
+// CHECK: "--build-id"
 // CHECK: "-dynamic-linker" "ld.so.1"
 // CHECK: Scrt1.o
 // CHECK-NOT: crti.o
@@ -34,4 +35,5 @@
 // RUN: %clang %s -### --target=x86_64-unknown-fuchsia -r 2>&1 \
 // RUN:     | FileCheck %s -check-prefix=CHECK-RELOCATABLE
 // CHECK-RELOCATABLE-NOT: "-pie"
+// CHECK-RELOCATABLE-NOT: "--build-id"
 // CHECK-RELOCATABLE: "-r"

@@ -9874,6 +9874,8 @@ void fuchsia::Linker::ConstructJob(Compilation &C, const JobAction &JA,
 
   if (Args.hasArg(options::OPT_r))
     CmdArgs.push_back("-r");
+  else
+    CmdArgs.push_back("--build-id");
 
   if (!Args.hasArg(options::OPT_static))
     CmdArgs.push_back("--eh-frame-hdr");
