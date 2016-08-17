@@ -9863,7 +9863,7 @@ void fuchsia::Linker::ConstructJob(Compilation &C, const JobAction &JA,
   if (!D.SysRoot.empty())
     CmdArgs.push_back(Args.MakeArgString("--sysroot=" + D.SysRoot));
 
-  if (!Args.hasArg(options::OPT_shared))
+  if (!Args.hasArg(options::OPT_shared) && !Args.hasArg(options::OPT_r))
     CmdArgs.push_back("-pie");
 
   if (Args.hasArg(options::OPT_rdynamic))
@@ -9871,6 +9871,9 @@ void fuchsia::Linker::ConstructJob(Compilation &C, const JobAction &JA,
 
   if (Args.hasArg(options::OPT_s))
     CmdArgs.push_back("-s");
+
+  if (Args.hasArg(options::OPT_r))
+    CmdArgs.push_back("-r");
 
   if (!Args.hasArg(options::OPT_static))
     CmdArgs.push_back("--eh-frame-hdr");

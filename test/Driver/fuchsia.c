@@ -30,3 +30,8 @@
 // RUN:     | FileCheck %s -check-prefix=CHECK-SHARED
 // CHECK-SHARED-NOT: "-pie"
 // CHECK-SHARED: "-shared"
+
+// RUN: %clang %s -### --target=x86_64-unknown-fuchsia -r 2>&1 \
+// RUN:     | FileCheck %s -check-prefix=CHECK-RELOCATABLE
+// CHECK-RELOCATABLE-NOT: "-pie"
+// CHECK-RELOCATABLE: "-r"
